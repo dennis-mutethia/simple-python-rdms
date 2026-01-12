@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple RDBMS Todo App</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', ...]
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">My Todo App</h1>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8">
+      <!-- Main Todo Section -->
+      <div class="md:col-span-2">
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <h2 class="text-2xl font-semibold text-gray-800 mb-6">Todos for Alice</h2>
+
+          <!-- Add New Todo Form -->
+          <form method="POST" class="mb-8 flex gap-3">
+            <input
+              type="text"
+              name="task"
+              placeholder="What needs to be done?"
+              required
+              class="flex-1 px-5 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            />
+            <button
+              type="submit"
+              class="px-8 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 active:scale-95 transition transform"
+            >
+              Add Todo
+            </button>
+          </form>
+
+          <!-- Todo List -->
+          {% if todos %}
+            <ul class="space-y-4">
+              {% for todo in todos %}
+                <li class="flex items-center justify-between p-5 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                  <div class="flex items-center gap-4">
+                    <span class="text-2xl">
+                      {% if todo.done %}
+                        ✅
+                      {% else %}
+                        ☐
+                      {% endif %}
+                    </span>
+                    <div>
+                      <p class="font-medium text-gray-900 {% if todo.done %}line-through opacity-70{% endif %}">
+                        {{ todo.task }}
+                      </p>
+                      <p class="text-sm text-gray-500">ID: {{ todo.id }}</p>
+                    </div>
+                  </div>
+
+                  <div class="flex gap-3">
+                    <a
+                      href="/toggle/{{ todo.id }}"
+                      class="px-5 py-2 text-sm font-medium rounded-lg {% if todo.done %}bg-orange-100 text-orange-700 hover:bg-orange-200{% else %}bg-green-100 text-green-700 hover:bg-green-200{% endif %} transition"
+                    >
+                      {{ 'Mark Undone' if todo.done else 'Mark Done' }}
+                    </a>
+                    <a
+                      href="/delete/{{ todo.id }}"
+                      onclick="return confirm('Delete this todo?')"
+                      class="px-5 py-2 text-sm font-medium bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition"
+                    >
+                      Delete
+                    </a>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-center text-gray-500 py-12">No todos yet. Add one above!</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Users Sidebar -->
+      <div class="md:col-span-1">
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <h3 class="text-xl font-semibold text-gray-800 mb-6">All Users</h3>
+          {% if users %}
+            <ul class="space-y-4">
+              {% for user in users %}
+                <li class="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                  <p class="font-medium text-gray-900">ID {{ user.id }}</p>
+                  <p class="text-lg font-bold text-purple-700">@{{ user.username }}</p>
+                  <p class="text-sm text-gray-600">{{ user.email }}</p>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-gray-500">No users found.</p>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
